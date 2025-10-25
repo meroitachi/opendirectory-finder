@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ultimate Google File Search</title>
+  <style>
+    body {
+      background: #0f172a;
+      color: #f8fafc;
+      font-family: "Segoe UI", sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: #1e293b;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 0 25px rgba(0,0,0,0.4);
+      width: 95%;
+      max-width: 700px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #38bdf8;
+    }
+    label { font-weight: 600; }
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 6px 0 12px;
+      border-radius: 8px;
+      border: none;
+      font-size: 15px;
+      background: #334155;
+      color: #f8fafc;
+    }
+    textarea { resize: vertical; height: 60px; }
+    button {
+      width: 100%;
+      background: #38bdf8;
+      border: none;
+      padding: 12px;
+      border-radius: 10px;
+      color: #0f172a;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 16px;
+      transition: 0.2s;
+    }
+    button:hover { background: #0ea5e9; }
+    .section { border-top: 1px solid #334155; padding-top: 12px; margin-top: 12px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Ultimate Google File Search</h1>
+
+    <label>Keyword(s) or Phrase:</label>
+    <input type="text" id="keyword" placeholder='e.g., "machine learning" or solar eclipse'>
+
+    <label>Site / Domain (optional):</label>
+    <input type="text" id="site" placeholder='e.g., example.com or site:.edu'>
+
+    <label>File Type(s):</label>
+    <select id="filetype">
+      <option value="">Any</option>
+      <option value="pdf">PDF</option>
+      <option value="docx">DOCX</option>
+      <option value="pptx">PPTX</option>
+      <option value="mp3">MP3</option>
+      <option value="mp4">MP4</option>
+      <option value="mkv">MKV</option>
+      <option value="jpg">JPG</option>
+      <option value="png">PNG</option>
+      <option value="zip">ZIP</option>
+      <option value="custom">Custom (enter below)</option>
+    </select>
+
+    <div id="customFiletypeDiv" style="display:none;">
+      <input type="text" id="customFiletype" placeholder="Enter file types separated by | (e.g., mp3|mp4|avi)">
+    </div>
+
+    <label>Include “index of” directory search?</label>
+    <select id="indexOf">
+      <option value="">No</option>
+      <option value="intitle:%22index of%22">Yes</option>
+    </select>
+
+    <label>In-URL Filter (optional):</label>
+    <input type="text" id="inurl" placeholder='e.g., /uploads/ or /files/'>
+
+    <label>Exclude Keywords or Sites (optional):</label>
+    <textarea id="exclude" placeholder='e.g., -site:github.com -reddit'></textarea>
+
+    <div class="section">
+      <label>Advanced Combos:</label>
+      <select id="combo">
+        <option value="">None</option>
+        <option value='(filetype:pdf OR filetype:docx OR filetype:pptx)'>All Documents</option>
+        <option value='(filetype:mp3 OR filetype:wav OR filetype:m4a)'>All Audios</option>
+        <option value='(filetype:mp4 OR filetype:mkv OR filetype:avi)'>All Videos</option>
+        <option value='(filetype:jpg OR filetype:png OR filetype:webp)'>All Images</option>
+        <option value='intitle:"index of" (mp3|mp4|pdf|zip)'>Index-of (All Files)</option>
+      </select>
+    </div>
+
+    <div class="section">
+      <button id="searchBtn">Search on Google</button>
+    </div>
+  </div>
+
+  <script>
+    const fileSelect = document.getElementById('filetype');
+    const customDiv = document.getElementById('customFiletypeDiv');
+    fileSelect.addEventListener('change', () => {
+      customDiv.style.display = fileSelect.value === 'custom' ? 'block' : 'none';
+    });
+
+    document.getElementById('searchBtn').addEventListener('click', () => {
+      const keyword = document.getElementById('keyword').value.trim();
+      const site = document.getElementById('site').value.trim();
+      const filetype = document.getElementById('filetype').value;
+      const customFiletype = document.getElementById('customFiletype').value.trim();
+      const indexOf = document.getElementById('indexOf').value;
+      const inurl = document.getElementById('inurl').value.trim();
+      const exclude = document.getElementById('exclude').value.trim();
+      const combo = document.getElementById('combo').value;
+
+      let query = "";
+
+      if (keyword) query += keyword + " ";
+      if (site) query += (site.startsWith("site:") ? site : "site:" + site) + " ";
+      if (filetype && filetype !== "custom") query += "filetype:" + filetype + " ";
+      if (filetype === "custom" && customFiletype) query += "(" + customFiletype.split("|").map(f => "filetype:" + f).join(" OR ") + ") ";
+      if (indexOf) query += indexOf + " ";
+      if (inurl) query += "inurl:" + inurl + " ";
+      if (exclude) query += exclude + " ";
+      if (combo) query += combo + " ";
+
+      const finalURL = "https://www.google.com/search?q=" + encodeURIComponent(query.trim());
+      window.open(finalURL, "_blank");
+    });
+  </script>
+</body>
+      </html>
